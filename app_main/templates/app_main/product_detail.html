@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% load humanize %}
+
+{% block content %}
+
+<section class="py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="row gx-4 gx-lg-5 align-items-center">
+            <div class="col-md-6"><img
+                class="card-img-top"
+                src="{{ product.image.url }}"
+                alt="{{ product.name }}"
+            /></div>
+            <div class="col-md-6">
+                <h1 class="display-5 fw-bolder"> {{ product.category.name }}: {{ product.name }}</h1>
+                <div class="fs-5 mb-2">
+                    <span class="text-decoration-line-through text-muted">${{ product.old_price|intcomma }}</span>
+                    - 
+                    <span>${{ product.new_price|intcomma }}</span>
+                </div>
+                <p class="lead">
+                    {{ product.description|linebreaksbr|truncatechars:100 }}
+                </p>
+                <div class="d-flex w-100">
+                    <form action='{% url "add_to_cart" product_id=product.id %}' method="post" class="w-100">
+                        {% csrf_token %}
+                        <input id='product_id' type="hidden" name='product_id' value='{{ product.id }}'>
+                        <input id='product_quantity' type="hidden" name='quantity' value='1'>
+                        <div class="d-flex flex-column w-100">
+                            {% if not request.user.is_authenticated %}
+                                <b>
+                                    Please, <a href="{% url 'login' %}?next=/detail/{{ product.id }}/">log in</a> to add product to your cart!
+                                </b>
+                            {% else %}
+                                <div class="d-flex align-items-center gap-2 w-100">
+                                    <button id="decrement-btn" type="button" class="btn btn-secondary" style="width: 17%;">-</button>
+                                    <p id="quantity" class="m-0 border border-secondary py-2 px-4 rounded" style="width: 13%;">1</p>
+                                    <button id="increment-btn" type="button" class="btn btn-secondary" style="width: 17%;">+</button>
+                                </div>
+                                <button id='add-to-cart' type="submit" class="mt-1 btn btn-success w-50">Add to cart</button>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    button:active {
+        scale: 90%;
+    }
+</style>
+
+<script>
+    //=============== Product quantity counter ===============
+    const incrementBtn = document.getElementById('increment-btn');
+    const decrementBtn = document.getElementById('decrement-btn');
+    const quantity = document.getElementById('quantity');
+
+    incrementBtn.addEventListener('click', () => {
+        quantity.textContent = Number(document.getElementById('quantity').textContent) + 1;
+        document.getElementById('product-quantity').value = Number(document.getElementById('quantity').textContent)
+    });
+
+    decrementBtn.addEventListener('click', () => {
+        if (Number(document.getElementById('quantity').textContent) > 1) {
+            quantity.innerHTML = Number(document.getElementById('quantity').textContent) - 1;
+            document.getElementById('product-quantity').value = Number(document.getElementById('quantity').textContent);
+        }
+    });
+</script>
+
+
+{% endblock content %}
+
+
