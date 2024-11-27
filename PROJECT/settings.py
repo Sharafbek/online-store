@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from environs import Env
+import os
 
 from django.urls import reverse_lazy
 
@@ -32,10 +33,10 @@ SECRET_KEY = env.str('DJANGO_SECRET_KEY')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'web-production-b58e6.up.railway.app', 'https://web-production-b58e6.up.railway.app']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -152,7 +153,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATIC_ROOT = BASE_DIR / 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR / 'static')]
+
+STATIC_ROOT = os.path.join(BASE_DIR / 'staticfiles')
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
